@@ -1,0 +1,79 @@
+from flask import current_app as app, jsonify, request
+from flask_security import Security,SQLAlchemyUserDatastore,hash_password
+from flask import render_template_string,render_template
+from flask_security import auth_required, current_user, roles_required,verify_password
+from back_end.models import db
+datastore=app.security.datastore
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/login',methods=['POST'])
+def login():
+    data=request.get_json()
+    email=data.get('email')
+    password=data.get('password')
+
+    if not email or not password:
+        return jsonify({"message":"invalid inputs"}),404
+    user=datastore.find_user(email=email)   
+    if not user :
+                return jsonify({"message":"invalid email"}),404
+    if verify_password(password,user.password):
+                return jsonify({'token':user.get_auth_token(),'email':user.email,'role':user.roles[0].name,'id':user.id})
+    return jsonify({'message':"wrong password"}),404
+
+@app.route('/register',methods=['POST'])
+def register():
+    data=request.get_json()
+    email=data.get('email')
+    password=data.get('password')
+    role=data.get('role')
+    if not email or not password or not role:
+        return jsonify({"message":"invalid inputs"}),404
+    user=datastore.find_user(email=email)   
+    if user :
+            return jsonify({"message":"user already exist"}),404
+    
+    try:
+        datastore.create_user(email=email,password=hash_password(password),roles=[role],active=True)
+        db.session.commit()
+        return jsonify({"message":"User created"}),200
+    except:
+          db.session.rollback()
+          return jsonify({"message":"error creating user"}),400
+
+
+
+@app.route('/profile')
+@auth_required('session','token')
+def profile():
+    return render_template_string(
+        """
+        ##############################
+        <h1> hey hey hey </h1>
+        <p> Welcome, {{current_user.email}}</p>
+        <p> Role :  {{current_user.roles[0].description}}</p>
+        <p><a href="/logout">Logout</a></p>
+        """
+    )
+
+@app.route('/Customer-dashboard')
+@roles_required('Customer')
+def Customer_dashboard():
+    return render_template_string(
+            """
+                <h1>this is Customer dashboard</h1>
+                <p>This should only be accessable to Customer</p>
+            """
+        )
+    
+@app.route('/Professional-dashboard')
+@roles_required('Professional')
+def Professional_dashboard():
+    return render_template_string(
+            """
+                <h1>this is Service Professional dashboard</h1>
+                <p>This should only be accessable to Service Professional</p>
+            """
+        )
