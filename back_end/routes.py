@@ -29,7 +29,7 @@ def register():
     email=data.get('email')
     password=data.get('password')
     role=data.get('role')
-    if not email or not password or not role:
+    if not email or not password or not role not in ['Customer',"Professional"]:
         return jsonify({"message":"invalid inputs"}),404
     user=datastore.find_user(email=email)   
     if user :

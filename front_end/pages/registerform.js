@@ -1,10 +1,22 @@
 export default {
     template : `
-    <div>
-        <input placeholder="Email"  v-model="email"/>  
-        <input placeholder="Password"  v-model="password"/>  
-        <input placeholder="Role"  v-model="role"/>
-        <button class='btn btn-primary' @click="submitregister"> Sign Up </button>
+    <div class="d-flex justify-content-center align-items-center vh-100">
+      <div class="card shadow p-4">
+        <h3 class="card-title text-center mb-4">Sign Up</h3>
+        <div class="form-group mb-3">
+          <input v-model="email" type="email" class="form-control" placeholder="Email" required/>
+        </div>
+        <div class="form-group mb-4">
+          <input v-model="password" type="password" class="form-control" placeholder="Password" required/>
+        </div>
+        <div class="form-group mb-4" placeholder="Role">
+          <select v-model="role" class="form-control" placeholder="Role" >
+            <option value="stud" placeholder="Role">Customer</option>
+            <option value="inst">Service Professional</option>
+          </select>
+        </div>
+        <button class="btn btn-primary w-100" @click="submitregister">Submit</button>
+      </div>
     </div>
     `,
     data(){
