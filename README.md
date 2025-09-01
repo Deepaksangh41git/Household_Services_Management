@@ -21,7 +21,6 @@ To provide a **digital platform** where users can easily book household services
 ## 🛠️ Tech Stack
 **Frontend:** VueJS + Bootstrap  
 **Backend:** Flask (REST API) + SQLite  
-**Templating:** Jinja2 (where required)  
 **Caching & Batch Jobs:** Redis + Celery  
 
 ---
